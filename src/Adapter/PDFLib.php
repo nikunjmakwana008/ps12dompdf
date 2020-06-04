@@ -231,6 +231,11 @@ class PDFLib extends \OPSPDFLib implements Canvas
 //         if (strlen($license) > 0) {
 //             $this->setPDFLibParameter("license", $license);
 //         }
+
+        //Radix
+        //$this->setPDFLibParameter("textformat", "utf8");
+        $this->setPDFLibParameter("stringformat", "utf8");
+        
         if ($this->getPDFLibMajorVersion() >= 7) {
             $this->setPDFLibParameter("errorpolicy", "return");
             //            $this->_pdf->set_option('logging={filename=' . \APP_PATH . '/logs/pdflib.log classes={api=1 warning=2}}');
@@ -266,6 +271,7 @@ class PDFLib extends \OPSPDFLib implements Canvas
         $this->_pdf->begin_page_ext($this->_width, $this->_height, "");
 
         $this->_page_number = $this->_page_count = 1;
+        $this->_page_text = array();
 
         $this->_imgs = array();
         $this->_fonts = array();
@@ -1366,6 +1372,11 @@ class PDFLib extends \OPSPDFLib implements Canvas
 
     protected function processPageScript(callable $callback): void
     {
+        if (!count($this->_page_text)) {
+            return;
+        }
+
+        $eval = null;
         $this->_pdf->suspend_page("");
 
         for ($p = 1; $p <= $this->_page_count; $p++) {
@@ -1373,6 +1384,29 @@ class PDFLib extends \OPSPDFLib implements Canvas
 
             $fontMetrics = $this->_dompdf->getFontMetrics();
             $callback($p, $this->_page_count, $this, $fontMetrics);
+            foreach ($this->_page_text as $pt) {
+                extract($pt);
+
+                switch ($_t) {
+                    case "text":
+                        $text = str_replace(array("{PAGE_NUM}", "{PAGE_COUNT}"),
+                            array($p, $this->_page_count), $text);
+                        $this->text($x, $y, $text, $font, $size, $color, $word_space, $char_space, $angle);
+                        break;
+
+                    case "script":
+                        if (!$eval) {
+                            $eval = new PHPEvaluator($this);
+                        }
+                        $eval->evaluate($code, array('PAGE_NUM' => $p, 'PAGE_COUNT' => $this->_page_count));
+                        break;
+
+                    case 'line':
+                        $this->line( $x1, $y1, $x2, $y2, $color, $width, $style );
+                        break;
+
+                }
+            }
 
             $this->_pdf->suspend_page("");
         }
