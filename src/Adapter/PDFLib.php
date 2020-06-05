@@ -6,7 +6,7 @@
  * @author  Helmut Tischer <htischer@weihenstephan.org>
  * @license http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
  */
-// changes made by us
+
 namespace Dompdf\Adapter;
 
 use Dompdf\Canvas;
@@ -1200,7 +1200,7 @@ class PDFLib extends \OPSPDFLib implements Canvas
         if (preg_match("/^barcode:/", $text)){
             $text_data=explode("barcode:",$text);
             $text="*".$text_data[1]."*";
-            $font=DOMPDF_FONT_DIR."FRE3OF9X";
+            $font="../../lib/fonts/FRE3OF9X";
             $size = 40;
         }
         $fh = $this->_load_font($font);
