@@ -4,7 +4,7 @@
  * @link    https://github.com/dompdf/dompdf
  * @license http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
  */
-// changes made by us
+
 namespace Dompdf\Adapter;
 
 use Dompdf\Canvas;
