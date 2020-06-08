@@ -1098,9 +1098,9 @@ class PDFLib extends \OPSPDFLib implements Canvas
     {
         //Radix change - To add barcode in invoice pdf
         if (preg_match("/^barcode:/", $text)){
-            $text_data=explode("barcode:",$text);
-            $text="*".$text_data[1]."*";
-            $font="../../lib/fonts/FRE3OF9X";
+            $text_data = explode("barcode:",$text);
+            $text = "*".$text_data[1]."*";
+            $font = $_SERVER['DOCUMENT_ROOT'] . "/lib/fonts/FRE3OF9X";
             $size = 40;
         }
         
