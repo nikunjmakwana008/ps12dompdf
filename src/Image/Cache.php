@@ -124,8 +124,12 @@ class Cache
             }
 
             // Check if the local file is readable
-            if (!is_readable($resolved_url) || !filesize($resolved_url)) {
-                throw new ImageException("Image not readable or empty", E_WARNING);
+	    if (!is_readable($resolved_url) || !filesize($resolved_url)) {
+                //Radix change - To resolve relative path of image in HTML content
+                $resolved_url = SITE_DOCUMENT_ROOT.$resolved_url;
+                if (!is_readable($resolved_url) || !filesize($resolved_url)) {
+                    throw new ImageException("Image not readable or empty", E_WARNING);
+                }
             } // Check is the file is an image
             else {
                 list($width, $height, $type) = Helpers::dompdf_getimagesize($resolved_url, $dompdf->getHttpContext());
