@@ -79,7 +79,14 @@ class Image extends Block
             $_y = $alt ? $y + $h - count($parts) * $height : $y;
 
             foreach ($parts as $i => $_part) {
-                $this->_canvas->text($x, $_y + $i * $height, $_part, $font, $height * 0.8, [0.5, 0.5, 0.5]);
+                $this->_canvas->text($x, $_y + $i * $height, $_part, $this->_dompdf->getOptions()->getDefaultFont(), $height * 0.8, [0.5, 0.5, 0.5]);
+            }
+        }
+
+        if ($this->_dompdf->getOptions()->getDebugLayout() && $this->_dompdf->getOptions()->getDebugLayoutBlocks()) {
+            $this->_debug_layout($frame->get_border_box(), "blue");
+            if ($this->_dompdf->getOptions()->getDebugLayoutPaddingBox()) {
+                $this->_debug_layout($frame->get_padding_box(), "blue", [0.5, 0.5]);
             }
         }
 
