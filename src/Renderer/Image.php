@@ -67,7 +67,29 @@ class Image extends Block
             }
         }
 
-        $this->addNamedDest($node);
+        if ($msg = $frame->get_image_msg()) {
+            $parts = preg_split("/\s*\n\s*/", $msg);
+            $font = $style->font_family;
+            $height = 10;
+            $_y = $alt ? $y + $h - count($parts) * $height : $y;
+
+            foreach ($parts as $i => $_part) {
+                $this->_canvas->text($x, $_y + $i * $height, $_part, $this->_dompdf->getOptions()->getDefaultFont(), $height * 0.8, [0.5, 0.5, 0.5]);
+            }
+        }
+
+        if ($this->_dompdf->getOptions()->getDebugLayout() && $this->_dompdf->getOptions()->getDebugLayoutBlocks()) {
+            $this->_debug_layout($frame->get_border_box(), "blue");
+            if ($this->_dompdf->getOptions()->getDebugLayoutPaddingBox()) {
+                $this->_debug_layout($frame->get_padding_box(), "blue", [0.5, 0.5]);
+            }
+        }
+
+        $id = $frame->get_node()->getAttribute("id");
+        if (strlen($id) > 0) {
+            $this->_canvas->add_named_dest($id);
+        }
+
         $this->debugBlockLayout($frame, "blue");
     }
 }
