@@ -120,7 +120,7 @@ class Image extends Block
             $_y = $alt ? $y + $h - count($parts) * $height : $y;
 
             foreach ($parts as $i => $_part) {
-                $this->_canvas->text($x, $_y + $i * $height, $_part, "times", $height * 0.8, [0.5, 0.5, 0.5]);
+                $this->_canvas->text($x, $_y + $i * $height, $_part, $this->_dompdf->getOptions()->getDefaultFont(), $height * 0.8, [0.5, 0.5, 0.5]);
             }
         }
 
