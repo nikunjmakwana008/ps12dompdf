@@ -123,7 +123,7 @@ class Dompdf
      *
      * @var array
      */
-    private $callbacks = array();
+    private $callbacks = [];
 
     /**
      * Experimental caching capability
@@ -188,10 +188,10 @@ class Dompdf
      *
      * @var array
      */
-    private $defaultViewOptions = array();
+    private $defaultViewOptions = [];
 
     /**
-     * Tells wether the DOM document is in quirksmode (experimental)
+     * Tells whether the DOM document is in quirksmode (experimental)
      *
      * @var bool
      */
@@ -204,12 +204,12 @@ class Dompdf
     *
     * @var array
     */
-    private $allowedLocalFileExtensions = array("htm", "html");
+    private $allowedLocalFileExtensions = ["htm", "html"];
 
     /**
      * @var array
      */
-    private $messages = array();
+    private $messages = [];
 
     /**
      * @var Options
@@ -227,24 +227,24 @@ class Dompdf
      * @var array
      * @deprecated
      */
-    public static $native_fonts = array(
+    public static $native_fonts = [
         "courier", "courier-bold", "courier-oblique", "courier-boldoblique",
         "helvetica", "helvetica-bold", "helvetica-oblique", "helvetica-boldoblique",
         "times-roman", "times-bold", "times-italic", "times-bolditalic",
         "symbol", "zapfdinbats"
-    );
+    ];
 
     /**
      * The list of built-in fonts
      *
      * @var array
      */
-    public static $nativeFonts = array(
+    public static $nativeFonts = [
         "courier", "courier-bold", "courier-oblique", "courier-boldoblique",
         "helvetica", "helvetica-bold", "helvetica-oblique", "helvetica-boldoblique",
         "times-roman", "times-bold", "times-italic", "times-bolditalic",
         "symbol", "zapfdinbats"
-    );
+    ];
 
     /**
      * Class constructor
@@ -334,15 +334,16 @@ class Dompdf
      * Parse errors are stored in the global array _dompdf_warnings.
      *
      * @param string $file a filename or url to load
+     * @param string $encoding Encoding of $file
      *
      * @throws Exception
      */
-    public function loadHtmlFile($file)
+    public function loadHtmlFile($file, $encoding = null)
     {
         $this->setPhpConfig();
 
         if (!$this->protocol && !$this->baseHost && !$this->basePath) {
-            list($this->protocol, $this->baseHost, $this->basePath) = Helpers::explode_url($file);
+            [$this->protocol, $this->baseHost, $this->basePath] = Helpers::explode_url($file);
         }
         $protocol = strtolower($this->protocol);
         $uri = Helpers::build_url($this->protocol, $this->baseHost, $this->basePath, $file);
@@ -391,7 +392,7 @@ class Dompdf
      * @param string $encoding
      * @deprecated
      */
-    public function load_html($str, $encoding = 'UTF-8')
+    public function load_html($str, $encoding = null)
     {
         $this->loadHtml($str, $encoding);
     }
@@ -415,47 +416,51 @@ class Dompdf
     /**
      * Loads an HTML string
      * Parse errors are stored in the global array _dompdf_warnings.
-     * @todo use the $encoding variable
      *
      * @param string $str HTML text to load
-     * @param string $encoding Not used yet
+     * @param string $encoding Encoding of $str
      */
-    public function loadHtml($str, $encoding = 'UTF-8')
+    public function loadHtml($str, $encoding = null)
     {
         $this->setPhpConfig();
 
-        // FIXME: Determine character encoding, switch to UTF8, update meta tag. Need better http/file stream encoding detection, currently relies on text or meta tag.
-        $known_encodings = mb_list_encodings();
-        mb_detect_order('auto');
-        if (($file_encoding = mb_detect_encoding($str, null, true)) === false) {
-            $file_encoding = "auto";
-        }
-        if (in_array(strtoupper($file_encoding), array('UTF-8','UTF8')) === false) {
-            $str = mb_convert_encoding($str, 'UTF-8', $file_encoding);
+        // Determine character encoding when $encoding parameter not used
+        if ($encoding === null) {
+            mb_detect_order('auto');
+            if (($encoding = mb_detect_encoding($str, null, true)) === false) {
+
+                //"auto" is expanded to "ASCII,JIS,UTF-8,EUC-JP,SJIS"
+                $encoding = "auto";
+            }
         }
 
-        $metatags = array(
+        if (in_array(strtoupper($encoding), array('UTF-8','UTF8')) === false) {
+            $str = mb_convert_encoding($str, 'UTF-8', $encoding);
+
+            //Update encoding after converting
+            $encoding = 'UTF-8';
+        }
+
+        $metatags = [
             '@<meta\s+http-equiv="Content-Type"\s+content="(?:[\w/]+)(?:;\s*?charset=([^\s"]+))?@i',
             '@<meta\s+content="(?:[\w/]+)(?:;\s*?charset=([^\s"]+))"?\s+http-equiv="Content-Type"@i',
             '@<meta [^>]*charset\s*=\s*["\']?\s*([^"\' ]+)@i',
-        );
+        ];
         foreach ($metatags as $metatag) {
             if (preg_match($metatag, $str, $matches)) {
-                if (isset($matches[1]) && in_array($matches[1], $known_encodings)) {
+                if (isset($matches[1]) && in_array($matches[1], mb_list_encodings())) {
                     $document_encoding = $matches[1];
                     break;
                 }
             }
         }
-        if (isset($document_encoding) && in_array(strtoupper($document_encoding), array('UTF-8','UTF8')) === false) {
+        if (isset($document_encoding) && in_array(strtoupper($document_encoding), ['UTF-8','UTF8']) === false) {
             $str = preg_replace('/charset=([^\s"]+)/i', 'charset=UTF-8', $str);
         } elseif (isset($document_encoding) === false && strpos($str, '<head>') !== false) {
             $str = str_replace('<head>', '<head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8">', $str);
         } elseif (isset($document_encoding) === false) {
             $str = '<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">' . $str;
         }
-        //FIXME: since we're not using this just yet
-        $encoding = 'UTF-8';
 
         // remove BOM mark from UTF-8, it's treated as document text by DOMDocument
         // FIXME: roll this into the encoding detection using UTF-8/16/32 BOM (http://us2.php.net/manual/en/function.mb-detect-encoding.php#91051)?
@@ -464,7 +469,7 @@ class Dompdf
         }
 
         // Store parsing warnings as messages
-        set_error_handler(array("\\Dompdf\\Helpers", "record_warnings"));
+        set_error_handler([Helpers::class, 'record_warnings']);
 
         try {
             // @todo Take the quirksmode into account
@@ -486,15 +491,6 @@ class Dompdf
             restore_error_handler();
             $this->restorePhpConfig();
         }
-
-        $this->dom = $doc;
-        $this->quirksmode = $quirksmode;
-
-        $this->tree = new FrameTree($this->dom);
-
-        restore_error_handler();
-
-        $this->restoreLocale();
     }
 
     /**
@@ -511,7 +507,7 @@ class Dompdf
      */
     public static function removeTextNodes(DOMNode $node)
     {
-        $children = array();
+        $children = [];
         for ($i = 0; $i < $node->childNodes->length; $i++) {
             $child = $node->childNodes->item($i);
             if ($child->nodeName === "#text") {
@@ -665,7 +661,7 @@ class Dompdf
      */
     public function parseDefaultView($value)
     {
-        $valid = array("XYZ", "Fit", "FitH", "FitV", "FitR", "FitB", "FitBH", "FitBV");
+        $valid = ["XYZ", "Fit", "FitH", "FitV", "FitR", "FitB", "FitBH", "FitBV"];
 
         $options = preg_split("/\s*,\s*/", trim($value));
         $defaultView = array_shift($options);
@@ -748,11 +744,11 @@ class Dompdf
         }
 
         $metas = $this->dom->getElementsByTagName("meta");
-        $labels = array(
+        $labels = [
             "author" => "Author",
             "keywords" => "Keywords",
             "description" => "Subject",
-        );
+        ];
         /** @var \DOMElement $meta */
         foreach ($metas as $meta) {
             $name = mb_strtolower($meta->getAttribute("name"));
@@ -768,7 +764,7 @@ class Dompdf
             }
         }
 
-        $root->set_containing_block(0, 0,$canvas->get_width(), $canvas->get_height());
+        $root->set_containing_block(0, 0, $canvas->get_width(), $canvas->get_height());
         $root->set_renderer(new Renderer($this));
 
         // This is where the magic happens:
@@ -872,7 +868,7 @@ class Dompdf
      * @param string $filename the name of the streamed file
      * @param array $options header options (see above)
      */
-    public function stream($filename = "document.pdf", $options = array())
+    public function stream($filename = "document.pdf", $options = [])
     {
         $this->setPhpConfig();
 
@@ -893,7 +889,7 @@ class Dompdf
      *
      * @return string|null
      */
-    public function output($options = array())
+    public function output($options = [])
     {
         $this->setPhpConfig();
 
@@ -902,15 +898,6 @@ class Dompdf
         $this->restorePhpConfig();
 
         return $output;
-    }
-    
-    public function close()
-    {
-    	$canvas = $this->getCanvas();
-    	if (is_null($canvas)) {
-    		return null;
-    	}
-    	$canvas->close();
     }
 
     /**
