@@ -121,7 +121,7 @@ class Dompdf
      *
      * @var array
      */
-    private $callbacks = array();
+    private $callbacks = [];
 
     /**
      * Experimental caching capability
@@ -186,10 +186,10 @@ class Dompdf
      *
      * @var array
      */
-    private $defaultViewOptions = array();
+    private $defaultViewOptions = [];
 
     /**
-     * Tells wether the DOM document is in quirksmode (experimental)
+     * Tells whether the DOM document is in quirksmode (experimental)
      *
      * @var bool
      */
@@ -202,12 +202,12 @@ class Dompdf
     *
     * @var array
     */
-    private $allowedLocalFileExtensions = array("htm", "html");
+    private $allowedLocalFileExtensions = ["htm", "html"];
 
     /**
      * @var array
      */
-    private $messages = array();
+    private $messages = [];
 
     /**
      * @var Options
@@ -225,24 +225,24 @@ class Dompdf
      * @var array
      * @deprecated
      */
-    public static $native_fonts = array(
+    public static $native_fonts = [
         "courier", "courier-bold", "courier-oblique", "courier-boldoblique",
         "helvetica", "helvetica-bold", "helvetica-oblique", "helvetica-boldoblique",
         "times-roman", "times-bold", "times-italic", "times-bolditalic",
         "symbol", "zapfdinbats"
-    );
+    ];
 
     /**
      * The list of built-in fonts
      *
      * @var array
      */
-    public static $nativeFonts = array(
+    public static $nativeFonts = [
         "courier", "courier-bold", "courier-oblique", "courier-boldoblique",
         "helvetica", "helvetica-bold", "helvetica-oblique", "helvetica-boldoblique",
         "times-roman", "times-bold", "times-italic", "times-bolditalic",
         "symbol", "zapfdinbats"
-    );
+    ];
 
     /**
      * Class constructor
@@ -339,12 +339,12 @@ class Dompdf
      * @param string      $file     A filename or URL to load.
      * @param string|null $encoding Encoding of the file.
      */
-    public function loadHtmlFile($file)
+    public function loadHtmlFile($file, $encoding = null)
     {
         $this->setPhpConfig();
 
         if (!$this->protocol && !$this->baseHost && !$this->basePath) {
-            list($this->protocol, $this->baseHost, $this->basePath) = Helpers::explode_url($file);
+            [$this->protocol, $this->baseHost, $this->basePath] = Helpers::explode_url($file);
         }
         $protocol = strtolower($this->protocol);
         $uri = Helpers::build_url($this->protocol, $this->baseHost, $this->basePath, $file);
@@ -393,7 +393,7 @@ class Dompdf
      * @param string $encoding
      * @deprecated
      */
-    public function load_html($str, $encoding = 'UTF-8')
+    public function load_html($str, $encoding = null)
     {
         $this->loadHtml($str, $encoding);
     }
@@ -430,7 +430,7 @@ class Dompdf
      * @param string      $str      The HTML to load.
      * @param string|null $encoding Encoding of the string.
      */
-    public function loadHtml($str, $encoding = 'UTF-8')
+    public function loadHtml($str, $encoding = null)
     {
         $this->setPhpConfig();
 
@@ -525,15 +525,6 @@ class Dompdf
             restore_error_handler();
             $this->restorePhpConfig();
         }
-
-        $this->dom = $doc;
-        $this->quirksmode = $quirksmode;
-
-        $this->tree = new FrameTree($this->dom);
-
-        restore_error_handler();
-
-        $this->restoreLocale();
     }
 
     /**
@@ -550,7 +541,7 @@ class Dompdf
      */
     public static function removeTextNodes(DOMNode $node)
     {
-        $children = array();
+        $children = [];
         for ($i = 0; $i < $node->childNodes->length; $i++) {
             $child = $node->childNodes->item($i);
             if ($child->nodeName === "#text") {
@@ -706,7 +697,7 @@ class Dompdf
      */
     public function parseDefaultView($value)
     {
-        $valid = array("XYZ", "Fit", "FitH", "FitV", "FitR", "FitB", "FitBH", "FitBV");
+        $valid = ["XYZ", "Fit", "FitH", "FitV", "FitR", "FitB", "FitBH", "FitBV"];
 
         $options = preg_split("/\s*,\s*/", trim($value));
         $defaultView = array_shift($options);
@@ -791,11 +782,11 @@ class Dompdf
         }
 
         $metas = $this->dom->getElementsByTagName("meta");
-        $labels = array(
+        $labels = [
             "author" => "Author",
             "keywords" => "Keywords",
             "description" => "Subject",
-        );
+        ];
         /** @var \DOMElement $meta */
         foreach ($metas as $meta) {
             $name = mb_strtolower($meta->getAttribute("name"));
@@ -811,7 +802,7 @@ class Dompdf
             }
         }
 
-        $root->set_containing_block(0, 0,$canvas->get_width(), $canvas->get_height());
+        $root->set_containing_block(0, 0, $canvas->get_width(), $canvas->get_height());
         $root->set_renderer(new Renderer($this));
 
         // This is where the magic happens:
@@ -915,7 +906,7 @@ class Dompdf
      * @param string $filename the name of the streamed file
      * @param array $options header options (see above)
      */
-    public function stream($filename = "document.pdf", $options = array())
+    public function stream($filename = "document.pdf", $options = [])
     {
         $this->setPhpConfig();
 
@@ -936,7 +927,7 @@ class Dompdf
      *
      * @return string|null
      */
-    public function output($options = array())
+    public function output($options = [])
     {
         $this->setPhpConfig();
 
@@ -945,15 +936,6 @@ class Dompdf
         $this->restorePhpConfig();
 
         return $output;
-    }
-    
-    public function close()
-    {
-    	$canvas = $this->getCanvas();
-    	if (is_null($canvas)) {
-    		return null;
-    	}
-    	$canvas->close();
     }
 
     /**
