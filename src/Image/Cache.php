@@ -125,32 +125,37 @@ class Cache
                 if ($protocol == "" || $protocol === "file://") {
                     $realfile = realpath($resolved_url);
         
-                    $rootDir = realpath($dompdf->getOptions()->getRootDir());
-                    if (strpos($realfile, $rootDir) !== 0) {
-                        $chroot = $dompdf->getOptions()->getChroot();
-                        $chrootValid = false;
-                        foreach($chroot as $chrootPath) {
-                            $chrootPath = realpath($chrootPath);
-                            if ($chrootPath !== false && strpos($realfile, $chrootPath) === 0) {
-                                $chrootValid = true;
-                                break;
+                    if($realfile) {
+                        $rootDir = realpath($dompdf->getOptions()->getRootDir());
+                        if (strpos($realfile, $rootDir) !== 0) {
+                            $chroot = $dompdf->getOptions()->getChroot();
+                            $chrootValid = false;
+                            foreach($chroot as $chrootPath) {
+                                $chrootPath = realpath($chrootPath);
+                                if ($chrootPath !== false && strpos($realfile, $chrootPath) === 0) {
+                                    $chrootValid = true;
+                                    break;
+                                }
+                            }
+                            if ($chrootValid !== true) {
+                                throw new ImageException("Permission denied on $resolved_url. The file could not be found under the paths specified by Options::chroot.", E_WARNING);
                             }
                         }
-                        if ($chrootValid !== true) {
-                            throw new ImageException("Permission denied on $resolved_url. The file could not be found under the paths specified by Options::chroot.", E_WARNING);
+            
+                        if (!$realfile) {
+                            throw new ImageException("File '$realfile' not found.", E_WARNING);
                         }
+                        $resolved_url = $realfile;    
                     }
-        
-                    if (!$realfile) {
-                        throw new ImageException("File '$realfile' not found.", E_WARNING);
+                    else {
+                        //Radix change - To resolve relative path of image in HTML content
+                        $resolved_url = realpath(SITE_DOCUMENT_ROOT . $resolved_url);
                     }
-        
-                    $resolved_url = $realfile;
                 }
             }
 
             // Check if the local file is readable
-	    if (!is_readable($resolved_url) || !filesize($resolved_url)) {
+	        if (!is_readable($resolved_url) || !filesize($resolved_url)) {
                 //Radix change - To resolve relative path of image in HTML content
                 $resolved_url = SITE_DOCUMENT_ROOT.$resolved_url;
                 if (!is_readable($resolved_url) || !filesize($resolved_url)) {
