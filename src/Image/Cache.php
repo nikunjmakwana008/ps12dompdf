@@ -98,7 +98,9 @@ class Cache
             } else {
                 $tmp_dir = $options->getTempDir();
                 if (($resolved_url = @tempnam($tmp_dir, "ca_dompdf_img_")) === false) {
-                    throw new ImageException("Unable to create temporary image in " . $tmp_dir, E_WARNING);
+                    //Radix change - To resolve relative path of image in HTML content
+                    $resolved_url = realpath(SITE_DOCUMENT_ROOT . $resolved_url);
+                    //throw new ImageException("Unable to create temporary image in " . $tmp_dir, E_WARNING);
                 }
                 $tempfile = $resolved_url;
 
