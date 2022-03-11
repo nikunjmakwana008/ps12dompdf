@@ -359,7 +359,7 @@ class PDFLib extends \OPSPDFLib implements Canvas
     public function close_object()
     {
         $this->_pdf->restore();
-        $this->_pdf->end_template();
+        $this->_pdf->end_template_ext();
         $this->_pdf->resume_page("pagenumber=" . $this->_page_number);
     }
 
@@ -738,7 +738,7 @@ class PDFLib extends \OPSPDFLib implements Canvas
         // Radix
         $pdflib_911_version_fix = "";
         if (($this->_pdf->get_option("major", "")*100)+($this->_pdf->get_option("minor", "")*10)+($this->_pdf->get_option("revision", "")) > "910") {
-            $pdflib_911_version_fix = ' oldsubsetting';
+            // $pdflib_911_version_fix = ' oldsubsetting';
         }
         $options .= $pdflib_911_version_fix . " ";
         
@@ -1198,7 +1198,7 @@ class PDFLib extends \OPSPDFLib implements Canvas
         $word_spacing = (float)$word_spacing;
         $char_spacing = (float)$char_spacing;
         $angle = -(float)$angle;
-
+        
         $this->_pdf->fit_textline($text, $x, $y, "rotate=$angle wordspacing=$word_spacing charspacing=$char_spacing ");
 
         $this->_set_fill_opacity($this->_current_opacity, "Normal");
@@ -1288,9 +1288,9 @@ class PDFLib extends \OPSPDFLib implements Canvas
 
         $this->_pdf->setfont($fh, $size);
 
-        $asc = $this->_pdf->get_value("ascender", $fh);
-        $desc = $this->_pdf->get_value("descender", $fh);
-
+        $asc = $this->_pdf->info_font($fh, "ascender", "fontsize=1");
+        $desc = $this->_pdf->info_font($fh, "descender", "fontsize=1");
+        
         // $desc is usually < 0,
         $ratio = $this->_dompdf->getOptions()->getFontHeightRatio();
 
@@ -1527,7 +1527,7 @@ class PDFLib extends \OPSPDFLib implements Canvas
             return $this->getPDFLibParameter($keyword, $optlist);
         }
 
-        return $this->_pdf->get_value($keyword);
+        return $this->_pdf->get_option($keyword);
     }
 
     /**
