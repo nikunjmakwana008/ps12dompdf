@@ -1,27 +1,28 @@
 <?php
 namespace Dompdf\Tests;
 
+use DOMDocument;
+use Dompdf\Adapter\CPDF;
+use Dompdf\Css\Stylesheet;
+use Dompdf\Dompdf;
 use Dompdf\Frame\FrameTree;
 use Dompdf\Options;
 use Dompdf\Tests\TestCase;
-use Dompdf\Dompdf;
-use Dompdf\Css\Stylesheet;
-use DOMDocument;
 
 class DompdfTest extends TestCase
 {
     public function testConstructor()
     {
         $dompdf = new Dompdf();
-        $this->assertInstanceOf('Dompdf\Adapter\Cpdf', $dompdf->getCanvas());
-        $this->assertEquals('', $dompdf->getBaseHost());
-        $this->assertEquals('', $dompdf->getBasePath());
-        $this->assertIsArray($dompdf->getCallbacks()); 
-        $this->assertInstanceOf('Dompdf\Css\Stylesheet', $dompdf->getCss());
+        $this->assertInstanceOf(CPDF::class, $dompdf->getCanvas());
+        $this->assertSame("", $dompdf->getProtocol());
+        $this->assertSame("", $dompdf->getBaseHost());
+        $this->assertSame("", $dompdf->getBasePath());
+        $this->assertIsArray($dompdf->getCallbacks());
+        $this->assertInstanceOf(Stylesheet::class, $dompdf->getCss());
         $this->assertNull($dompdf->getDom());
         $this->assertNull($dompdf->getHttpContext());
-        $this->assertInstanceOf('Dompdf\Options', $dompdf->getOptions());
-        $this->assertNull($dompdf->getProtocol());
+        $this->assertInstanceOf(Options::class, $dompdf->getOptions());
         $this->assertFalse($dompdf->getQuirksmode());
         $this->assertNull($dompdf->getTree());
     }
@@ -42,12 +43,16 @@ class DompdfTest extends TestCase
         $this->assertEquals('test1', $dompdf->getBaseHost());
         $this->assertEquals('test2', $dompdf->getBasePath());
         $this->assertCount(1, $dompdf->getCallbacks());
-        $this->assertInstanceOf('Dompdf\Css\Stylesheet', $dompdf->getCss());
-        $this->assertInstanceOf('DOMDocument', $dompdf->getDom());
+        $this->assertInstanceOf(Stylesheet::class, $dompdf->getCss());
+        $this->assertInstanceOf(DOMDocument::class, $dompdf->getDom());
         $this->assertIsResource($dompdf->getHttpContext());
-        $this->assertInstanceOf('Dompdf\Options', $dompdf->getOptions());
+        $this->assertInstanceOf(Options::class, $dompdf->getOptions());
         $this->assertEquals('test3', $dompdf->getProtocol());
-        $this->assertInstanceOf('Dompdf\Frame\FrameTree', $dompdf->getTree());
+        $this->assertInstanceOf(FrameTree::class, $dompdf->getTree());
+
+        $dompdf = new Dompdf();
+        $dompdf->setHttpContext(['ssl' => ['verify_peer' => false]]);
+        $this->assertIsResource($dompdf->getHttpContext());
     }
 
     public function testLoadHtml()
@@ -68,6 +73,42 @@ class DompdfTest extends TestCase
         $dompdf->render();
 
         $this->assertEquals('', $dompdf->getDom()->textContent);
+    }
+
+    public function callbacksProvider(): array
+    {
+        return [
+            ["begin_page_reflow", 1],
+            ["begin_frame", 3],
+            ["end_frame", 3],
+            ["begin_page_render", 1],
+            ["end_page_render", 1]
+        ];
+    }
+
+    /**
+     * @dataProvider callbacksProvider
+     */
+    public function testCallbacks(string $event, int $numCalls): void
+    {
+        $called = 0;
+
+        $dompdf = new Dompdf();
+        $dompdf->setCallbacks([
+            [
+                "event" => $event,
+                "f" => function ($infos) use (&$called) {
+                    $this->assertIsArray($infos);
+                    $this->assertCount(4, $infos);
+                    $called++;
+                }
+            ]
+        ]);
+
+        $dompdf->loadHtml("<html><body><p>Some text</p></body></html>");
+        $dompdf->render();
+
+        $this->assertSame($numCalls, $called);
     }
 
     public function testSpaceAtStartOfSecondInlineTag()
