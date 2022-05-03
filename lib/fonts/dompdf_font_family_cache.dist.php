@@ -106,8 +106,4 @@ else {
                 'normal' => $distFontDir . '/DejaVuSerif'
             ]
     ];
-<<<<<<< HEAD
-}
-=======
 };
->>>>>>> upstream/master
