@@ -106,4 +106,4 @@ else {
                 'normal' => $distFontDir . '/DejaVuSerif'
             ]
     ];
-}
+};
