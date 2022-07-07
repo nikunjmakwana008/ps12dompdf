@@ -86,6 +86,7 @@ class Cache
                 }
             }
 
+<<<<<<< HEAD
             if ($protocol === "file://") {
                 $resolved_url = $full_url;
             } elseif (isset(self::$_cache[$full_url])) {
@@ -96,6 +97,37 @@ class Cache
                     //Radix change - To resolve relative path of image in HTML content
                     $resolved_url = realpath(SITE_DOCUMENT_ROOT . $resolved_url);
                     //throw new ImageException("Unable to create temporary image in " . $tmp_dir, E_WARNING);
+=======
+                if ($protocol === "" || $protocol === "file://") {
+                    $realfile = realpath($resolved_url);
+        
+                    if($realfile) {
+                        $rootDir = realpath($dompdf->getOptions()->getRootDir());
+                        if (strpos($realfile, $rootDir) !== 0) {
+                            $chroot = $dompdf->getOptions()->getChroot();
+                            $chrootValid = false;
+                            foreach($chroot as $chrootPath) {
+                                $chrootPath = realpath($chrootPath);
+                                if ($chrootPath !== false && strpos($realfile, $chrootPath) === 0) {
+                                    $chrootValid = true;
+                                    break;
+                                }
+                            }
+                            if ($chrootValid !== true) {
+                                throw new ImageException("Permission denied on $resolved_url. The file could not be found under the paths specified by Options::chroot.", E_WARNING);
+                            }
+                        }
+            
+                        if (!$realfile) {
+                            throw new ImageException("File '$realfile' not found.", E_WARNING);
+                        }
+                        $resolved_url = $realfile;    
+                    }
+                    else {
+                        //Radix change - To resolve relative path of image in HTML content
+                        $resolved_url = realpath(SITE_DOCUMENT_ROOT . $resolved_url);
+                    }
+>>>>>>> a67fb7374460d091301445a74837bebb244721b0
                 }
                 $tempfile = $resolved_url;
 
@@ -259,8 +291,8 @@ class Cache
     }
 }
 
-if (file_exists(realpath(__DIR__ . "/../../lib/res/broken_image.svg"))) {
-    Cache::$broken_image = realpath(__DIR__ . "/../../lib/res/broken_image.svg");
+if (file_exists(realpath(__DIR__ . "/../../lib/res/broken_image.png"))) {
+    Cache::$broken_image = realpath(__DIR__ . "/../../lib/res/broken_image.png");
 }
 if (file_exists(realpath(__DIR__ . "/../../lib/res/broken_image.png"))) {
     Cache::$broken_image = realpath(__DIR__ . "/../../lib/res/broken_image.png");

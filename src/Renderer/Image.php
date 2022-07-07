@@ -80,6 +80,7 @@ class Image extends Block
 
             foreach ($parts as $i => $_part) {
                 $this->_canvas->text($x, $_y + $i * $height, $_part, $this->_dompdf->getOptions()->getDefaultFont(), $height * 0.8, [0.5, 0.5, 0.5]);
+<<<<<<< HEAD
             }
         }
 
@@ -87,6 +88,8 @@ class Image extends Block
             $this->_debug_layout($frame->get_border_box(), "blue");
             if ($this->_dompdf->getOptions()->getDebugLayoutPaddingBox()) {
                 $this->_debug_layout($frame->get_padding_box(), "blue", [0.5, 0.5]);
+=======
+>>>>>>> a67fb7374460d091301445a74837bebb244721b0
             }
         }
 
