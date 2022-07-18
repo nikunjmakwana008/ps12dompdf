@@ -1,51 +1,51 @@
 {
     "sans-serif": {
-        "normal": "Helvetica",
-        "bold": "Helvetica-Bold",
-        "italic": "Helvetica-Oblique",
-        "bold_italic": "Helvetica-BoldOblique"
+        "normal": "Arial",
+        "bold": "Arial",
+        "italic": "Arial",
+        "bold_italic": "Arial"
     },
     "times": {
-        "normal": "Times-Roman",
-        "bold": "Times-Bold",
-        "italic": "Times-Italic",
-        "bold_italic": "Times-BoldItalic"
+        "normal": "Arial",
+        "bold": "Arial",
+        "italic": "Arial",
+        "bold_italic": "Arial"
     },
     "times-roman": {
-        "normal": "Times-Roman",
-        "bold": "Times-Bold",
-        "italic": "Times-Italic",
-        "bold_italic": "Times-BoldItalic"
+        "normal": "Arial",
+        "bold": "Arial",
+        "italic": "Arial",
+        "bold_italic": "Arial"
     },
     "courier": {
-        "normal": "Courier",
-        "bold": "Courier-Bold",
-        "italic": "Courier-Oblique",
-        "bold_italic": "Courier-BoldOblique"
+        "normal": "Arial",
+        "bold": "Arial",
+        "italic": "Arial",
+        "bold_italic": "Arial"
     },
     "helvetica": {
-        "normal": "Helvetica",
-        "bold": "Helvetica-Bold",
-        "italic": "Helvetica-Oblique",
-        "bold_italic": "Helvetica-BoldOblique"
+        "normal": "Arial",
+        "bold": "Arial",
+        "italic": "Arial",
+        "bold_italic": "Arial"
     },
     "zapfdingbats": {
-        "normal": "ZapfDingbats",
-        "bold": "ZapfDingbats",
-        "italic": "ZapfDingbats",
-        "bold_italic": "ZapfDingbats"
+        "normal": "Arial",
+        "bold": "Arial",
+        "italic": "Arial",
+        "bold_italic": "Arial"
     },
     "symbol": {
-        "normal": "Symbol",
-        "bold": "Symbol",
-        "italic": "Symbol",
-        "bold_italic": "Symbol"
+        "normal": "Arial",
+        "bold": "Arial",
+        "italic": "Arial",
+        "bold_italic": "Arial"
     },
     "serif": {
-        "normal": "Times-Roman",
-        "bold": "Times-Bold",
-        "italic": "Times-Italic",
-        "bold_italic": "Times-BoldItalic"
+        "normal": "Arial",
+        "bold": "Arial",
+        "italic": "Arial",
+        "bold_italic": "Arial"
     },
     "monospace": {
         "normal": "Courier",
