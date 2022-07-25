@@ -66,7 +66,10 @@ class Cache
             $full_url = Helpers::build_url($protocol, $host, $base_path, $url);
 
             if ($full_url === null) {
-                throw new ImageException("Unable to parse image URL $url.", E_WARNING);
+                $full_url = Helpers::build_url($protocol, $host, $base_path, SITE_DOCUMENT_ROOT . $url);
+                if ($full_url === null) {
+                    throw new ImageException("Unable to parse image URL $url.", E_WARNING);
+                }
             }
 
             $parsed_url = Helpers::explode_url($full_url);
