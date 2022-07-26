@@ -1078,7 +1078,7 @@ class PDFLib extends \OPSPDFLib implements Canvas
                 //FIXME: PDFLib loads SVG but returns error message "Function must not be called in 'page' scope"
                 $image_load_response = $this->_pdf->load_graphics($img_type, $img, "");
             } else {
-                $image_load_response = $this->_pdf->load_image($img_type, $img, "");
+                $image_load_response = $this->_pdf->load_image($img_type, $img, "honoriccprofile=false");
             }
             if ($image_load_response === 0) {
                 //TODO: should do something with the error message
