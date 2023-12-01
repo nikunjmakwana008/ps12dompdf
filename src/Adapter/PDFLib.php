@@ -77,7 +77,7 @@ class PDFLib extends \OPSPDFLib implements Canvas
         "symbol"                => "Symbol",
         "zapfdinbats"           => "ZapfDingbats",
         "zapfdingbats"          => "ZapfDingbats",
-    );
+    ];
 
     /**
      * @var \Dompdf\Dompdf
@@ -735,7 +735,7 @@ class PDFLib extends \OPSPDFLib implements Canvas
         if (!$isNativeFont) {
             $options .= " embedding=true";
         }
-
+        $font = $lcBaseFont;
         $options .= " autosubsetting=" . ($this->_dompdf->getOptions()->getIsFontSubsettingEnabled() === false ? "false" : "true");
 
         if (is_null($encoding)) {
