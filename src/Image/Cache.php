@@ -63,7 +63,10 @@ class Cache
             $full_url = Helpers::build_url($protocol, $host, $base_path, $url);
 
             if ($full_url === null) {
-                throw new ImageException("Unable to parse image URL $url.", E_WARNING);
+                $full_url = Helpers::build_url($protocol, $host, $base_path, SITE_DOCUMENT_ROOT . $url);
+                if ($full_url === null) {
+                    throw new ImageException("Unable to parse image URL $url.", E_WARNING);
+                }
             }
 
             $parsed_url = Helpers::explode_url($full_url);
@@ -90,7 +93,9 @@ class Cache
             } else {
                 $tmp_dir = $options->getTempDir();
                 if (($resolved_url = @tempnam($tmp_dir, "ca_dompdf_img_")) === false) {
-                    throw new ImageException("Unable to create temporary image in " . $tmp_dir, E_WARNING);
+                    //Radix change - To resolve relative path of image in HTML content
+                    $resolved_url = realpath(SITE_DOCUMENT_ROOT . $resolved_url);
+                    //throw new ImageException("Unable to create temporary image in " . $tmp_dir, E_WARNING);
                 }
                 $tempfile = $resolved_url;
 
@@ -117,11 +122,16 @@ class Cache
             }
 
             // Check if the local file is readable
-            if (!is_readable($resolved_url) || !filesize($resolved_url)) {
-                throw new ImageException("Image not readable or empty", E_WARNING);
+	        if (!is_readable($resolved_url) || !filesize($resolved_url)) {
+                //Radix change - To resolve relative path of image in HTML content
+                $resolved_url = SITE_DOCUMENT_ROOT.$resolved_url;
+                if (!is_readable($resolved_url) || !filesize($resolved_url)) {
+                    throw new ImageException("Image not readable or empty", E_WARNING);
+                }
+            } // Check is the file is an image
+            else {
+                list($width, $height, $type) = Helpers::dompdf_getimagesize($resolved_url, $options->getHttpContext());
             }
-
-            list($width, $height, $type) = Helpers::dompdf_getimagesize($resolved_url, $options->getHttpContext());
 
             if (($width && $height && in_array($type, ["gif", "png", "jpeg", "bmp", "svg","webp"], true)) === false) {
                 throw new ImageException("Image type unknown", E_WARNING);
@@ -254,6 +264,9 @@ class Cache
     }
 }
 
-if (file_exists(realpath(__DIR__ . "/../../lib/res/broken_image.svg"))) {
-    Cache::$broken_image = realpath(__DIR__ . "/../../lib/res/broken_image.svg");
+if (file_exists(realpath(__DIR__ . "/../../lib/res/broken_image.png"))) {
+    Cache::$broken_image = realpath(__DIR__ . "/../../lib/res/broken_image.png");
+}
+if (file_exists(realpath(__DIR__ . "/../../lib/res/broken_image.png"))) {
+    Cache::$broken_image = realpath(__DIR__ . "/../../lib/res/broken_image.png");
 }

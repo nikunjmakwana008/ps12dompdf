@@ -66,6 +66,7 @@ use Masterminds\HTML5;
  */
 class Dompdf
 {
+    public static $PDFLIB;
     /**
      * Version string for dompdf
      *

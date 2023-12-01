@@ -767,10 +767,10 @@ class Helpers
         // Custom types
         $types = [
             IMAGETYPE_JPEG => "jpeg",
-            IMAGETYPE_GIF  => "gif",
+            //IMAGETYPE_GIF  => "gif", // RADIX change
             IMAGETYPE_BMP  => "bmp",
             IMAGETYPE_PNG  => "png",
-            IMAGETYPE_WEBP => "webp",
+            //IMAGETYPE_WEBP => "webp", // RADIX change
         ];
 
         $type = $types[$type] ?? null;
