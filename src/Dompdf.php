@@ -400,22 +400,6 @@ class Dompdf
         $this->loadHtml($str, $encoding);
     }
 
-    public function loadDOM($doc, $quirksmode = false) {
-        // Remove #text children nodes in nodes that shouldn't have
-        $tag_names = ["html", "head", "table", "tbody", "thead", "tfoot", "tr"];
-        foreach ($tag_names as $tag_name) {
-            $nodes = $doc->getElementsByTagName($tag_name);
-
-            foreach ($nodes as $node) {
-                self::removeTextNodes($node);
-            }
-        }
-
-        $this->dom = $doc;
-        $this->quirksmode = $quirksmode;
-        $this->tree = new FrameTree($this->dom);
-    }
-
     /**
      * @param DOMDocument $doc
      * @param bool        $quirksmode
