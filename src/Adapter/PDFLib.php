@@ -774,7 +774,7 @@ class PDFLib extends \OPSPDFLib implements Canvas
 
         // Native fonts are build in, just load it
         if ($isNativeFont) {
-            $this->_fonts[$key] = $this->_pdf->load_font($font, $encoding, $options);
+            $this->_fonts[$key] = $this->_pdf->load_font($baseFont, $encoding, $options);
             return $this->_fonts[$key];
         }
 
