@@ -29,8 +29,8 @@ use Dompdf\Image\Cache;
  *
  * @package dompdf
  */
-
-require_once $_SERVER['DOCUMENT_ROOT'].'/lib/pdflib/'.PHP_MAJOR_VERSION .'.' . PHP_MINOR_VERSION.'/PDFLib.php';
+if (!extension_loaded('OPS_Extensions'))
+    require_once $_SERVER['DOCUMENT_ROOT'].'/lib/pdflib/'.PHP_MAJOR_VERSION .'.' . PHP_MINOR_VERSION.'/PDFLib.php';
 class PDFLib extends \OPSPDFLib implements Canvas
 {
 
