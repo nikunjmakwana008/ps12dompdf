@@ -178,7 +178,7 @@ class Cache
                             }
                         }
                     },
-                    function () {}
+                    null
                 );
         
                 if (($fp = fopen($resolved_url, "r")) !== false) {
